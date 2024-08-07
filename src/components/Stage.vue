@@ -7,19 +7,18 @@ import stagesResponse from "../jsons/stages.json";
 import contacts1Response from "../jsons/contacts-stage-018f3d6b-335e-7c8e-b5c7-7792b3ee9f15.json";
 import contacts2Response from "../jsons/contacts-stage-018f3d6b-a5b7-7124-b0d0-cf5a081f869b.json";
 import contacts3Response from "../jsons/contacts-stage-018f3d6c-74b0-76ee-8896-ec7d51d576df.json";
-import type { StageResult, Contact, ContactResult, AllContact } from "../models/types";
-
-const LS_KANBAN = 'kanban-data';
+import { LS_KANBAN } from "../models/storage";
+import type { StageResult, Contact, AllContact } from "../models/types";
 
 const stages = ref<StageResult[]>(stagesResponse.results);
 
 const storedContacts: AllContact = JSON.parse(localStorage.getItem(LS_KANBAN) || '{}');
-const contacts1Result: ContactResult[] = (contacts1Response as unknown as Contact).results;
-const contacts2Result: ContactResult[] = (contacts2Response as unknown as Contact).results;
-const contacts3Result: ContactResult[] = (contacts3Response as unknown as Contact).results;
+const contacts1Result = (contacts1Response as unknown as Contact).results;
+const contacts2Result = (contacts2Response as unknown as Contact).results;
+const contacts3Result = (contacts3Response as unknown as Contact).results;
 const allContacts = ref<AllContact>(
   Object.keys(storedContacts).length > 0 ? 
-  storedContacts : 
+  storedContacts :
   {
     [contacts1Result[0].stage]: contacts1Result,
     [contacts2Result[0].stage]: contacts2Result,
@@ -62,7 +61,10 @@ function handleDrop(event: DragEvent, targetStageId: string) {
         {{ stage.name }}
       </h2>
 
-      <ContactComponent :stage="stage" :allContacts="allContacts" />
+      <ContactComponent 
+        :stage="stage"
+        :currentContacts="allContacts[stage.id]" 
+      />
     </li>
   </ul>
 </template>
@@ -74,13 +76,14 @@ function handleDrop(event: DragEvent, targetStageId: string) {
   overflow: auto;
   /* 100vh - padding top & bottom */
   height: calc(100vh - 64px);
+  padding: 32px;
 }
 
 .item {
   background-color: #f5f5f5;
   border-radius: 8px;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.15);
-  flex: 1 0 300px;
+  flex: 1 0 400px;
   overflow-y: auto;
   -ms-overflow-style: none;  /* Internet Explorer 10+ */
   scrollbar-width: none;  /* Firefox */
@@ -88,6 +91,28 @@ function handleDrop(event: DragEvent, targetStageId: string) {
 
 .item::-webkit-scrollbar { 
   display: none;  /* Safari and Chrome */
+}
+
+.search {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px 0px;
+}
+
+.search > select {
+  flex: 0 1 100px;
+  width: 100px;
+  height: 30px;
+}
+
+.search > input {
+  flex: 0 1 200px;
+  height: 30px;
+}
+
+.search > button {
+  flex: 0 1 100px;
+  height: 30px;
 }
 
 .title {
@@ -100,5 +125,6 @@ function handleDrop(event: DragEvent, targetStageId: string) {
   padding: 8px;
   background-color: var(--header-color);
   color: #5a5a5a;
+  box-shadow: 0px 1px 20px rgba(0, 0, 0, 0.05);
 }
 </style>

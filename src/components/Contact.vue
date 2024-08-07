@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import getFlagEmoji from "../utils/getFlagEmoji";
-import type { StageResult, ContactResult, AllContact } from "../models/types";
+import type { StageResult, ContactResult } from "../models/types";
 
 defineProps<{
   stage: StageResult;
-  allContacts: AllContact;
+  currentContacts: ContactResult[];
 }>();
 
 function handleDrag(event: DragEvent, stage: StageResult, contact: ContactResult) {
@@ -21,7 +21,7 @@ function handleDrag(event: DragEvent, stage: StageResult, contact: ContactResult
   <ul class="contact">
     <li 
       class="list"
-      v-for="contact in allContacts[stage.id]"
+      v-for="contact in currentContacts"
       draggable="true"
       @dragstart="handleDrag($event, stage, contact)"
       :style="{'--header-color': stage.header_color }"
@@ -68,6 +68,10 @@ function handleDrag(event: DragEvent, stage: StageResult, contact: ContactResult
   cursor: grab;
 }
 
+.list:active {
+  cursor: grabbing;
+}
+
 .list::before {
   content: '';
   /* 100% + padding left & right */
@@ -111,5 +115,4 @@ function handleDrag(event: DragEvent, stage: StageResult, contact: ContactResult
 .contacts > span {
   color: #000;
 }
-
 </style>

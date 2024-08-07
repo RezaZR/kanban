@@ -1,16 +1,20 @@
 <script setup lang="ts">
+import Header from "./presentations/Header.vue";
+import Sidebar from "./presentations/Sidebar.vue";
 import Stage from "./components/Stage.vue";
 </script>
 
 <template>
-  <div class="staging">
+  <Header />
+  <main class="main">
+    <Sidebar />
     <Stage />
-  </div>
+  </main>
 </template>
 
 <style scoped>
-.staging {
-  padding: 32px;
+.main {
+  display: flex;
   background-color: #dcdcdc;
 }
 </style>
