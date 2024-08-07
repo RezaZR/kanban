@@ -1,23 +1,19 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-
-import contacts1Response from "../jsons/contacts-stage-018f3d6b-335e-7c8e-b5c7-7792b3ee9f15.json";
-import contacts2Response from "../jsons/contacts-stage-018f3d6b-a5b7-7124-b0d0-cf5a081f869b.json";
-import contacts3Response from "../jsons/contacts-stage-018f3d6c-74b0-76ee-8896-ec7d51d576df.json";
-import getFlagEmoji from '../utils/getFlagEmoji';
+import getFlagEmoji from "../utils/getFlagEmoji";
+import type { StageResult, ContactResult, AllContact } from "../models/types";
 
 defineProps<{
-  stage: any;
+  stage: StageResult;
+  allContacts: AllContact;
 }>();
 
-const contacts1Result = contacts1Response.results;
-const contacts2Result = contacts2Response.results;
-const contacts3Result = contacts3Response.results;
-const allContacts = ref({
-  [contacts1Result[0].stage]: contacts1Result,
-  [contacts2Result[0].stage]: contacts2Result,
-  [contacts3Result[0].stage]: contacts3Result,
-});
+function handleDrag(event: DragEvent, stage: StageResult, contact: ContactResult) {
+  const dataTransfer = event.dataTransfer as DataTransfer;
+  dataTransfer.dropEffect = "move";
+  dataTransfer.effectAllowed = "move";
+  dataTransfer.setData("stageId", stage.id);
+  dataTransfer.setData("contactId", contact.id);
+}
 
 </script>
 
@@ -26,23 +22,33 @@ const allContacts = ref({
     <li 
       class="list"
       v-for="contact in allContacts[stage.id]"
+      draggable="true"
+      @dragstart="handleDrag($event, stage, contact)"
       :style="{'--header-color': stage.header_color }"
     >
-      <p class="country" v-if="contact.country_code">{{ getFlagEmoji(contact.country_code) }}</p>
-      <p class="country" v-else data-has-country="false">No Nationality</p>
+      <p class="country" v-if="contact?.country_code">
+        {{ getFlagEmoji(contact.country_code) }}
+      </p>
+      <p class="country" v-else data-has-country="false">
+        No Nationality
+      </p>
 
-      <h3 class="name">{{ contact.full_name }}</h3>
+      <h3 class="name">{{ contact?.full_name }}</h3>
       <p class="contacts">
         <span>&#9993; </span>
-        <a :href="'mailto:' + contact.email">
-          {{ contact.email }}
+        <a :href="'mailto:' + contact?.email">
+          {{ contact?.email }}
         </a>
       </p>  
       <p class="contacts">
         <span>&#9742; </span>
-        <a v-if="contact.phone_number" :href="'tel:'+ contact.phone_number || ''">
-          {{ contact.phone_number }}
+        <a 
+          v-if="contact?.phone_number"
+          :href="'tel:'+ contact?.phone_number || ''"
+        >
+          {{ contact?.phone_number }}
         </a>
+        <span v-else>-</span>
       </p>
     </li>
   </ul>
@@ -87,13 +93,15 @@ const allContacts = ref({
   font-size: 12px;
   font-style: italic;
   color: #9b9b9b;
+  height: 24px;
 }
 
 .name {
   font-size: 16px;
   font-weight: 600;
-  margin: 4px 0px;
   letter-spacing: 0.25px;
+  text-transform: capitalize;
+  margin: 4px 0px;
 }
 
 .contacts {

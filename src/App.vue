@@ -10,6 +10,7 @@ import Stage from "./components/Stage.vue";
 
 <style scoped>
 .staging {
+  padding: 32px;
   background-color: #dcdcdc;
 }
 </style>
