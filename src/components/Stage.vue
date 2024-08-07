@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import type { Ref } from "vue";
 
 import ContactComponent from "./Contact.vue";
 
@@ -10,16 +9,23 @@ import contacts2Response from "../jsons/contacts-stage-018f3d6b-a5b7-7124-b0d0-c
 import contacts3Response from "../jsons/contacts-stage-018f3d6c-74b0-76ee-8896-ec7d51d576df.json";
 import type { StageResult, Contact, ContactResult, AllContact } from "../models/types";
 
+const LS_KANBAN = 'kanban-data';
+
 const stages = ref<StageResult[]>(stagesResponse.results);
 
+const storedContacts: AllContact = JSON.parse(localStorage.getItem(LS_KANBAN) || '{}');
 const contacts1Result: ContactResult[] = (contacts1Response as unknown as Contact).results;
 const contacts2Result: ContactResult[] = (contacts2Response as unknown as Contact).results;
 const contacts3Result: ContactResult[] = (contacts3Response as unknown as Contact).results;
-const allContacts = ref<AllContact>({
-  [contacts1Result[0].stage]: contacts1Result,
-  [contacts2Result[0].stage]: contacts2Result,
-  [contacts3Result[0].stage]: contacts3Result,
-});
+const allContacts = ref<AllContact>(
+  Object.keys(storedContacts).length > 0 ? 
+  storedContacts : 
+  {
+    [contacts1Result[0].stage]: contacts1Result,
+    [contacts2Result[0].stage]: contacts2Result,
+    [contacts3Result[0].stage]: contacts3Result,
+  }
+);
 
 function handleDrop(event: DragEvent, targetStageId: string) {
   const storedStageId = (event.dataTransfer as DataTransfer).getData("stageId");
@@ -36,6 +42,7 @@ function handleDrop(event: DragEvent, targetStageId: string) {
       allContacts.value = Object.assign(allContacts.value, newContacts);
     }
   }
+  localStorage.setItem(LS_KANBAN, JSON.stringify(allContacts.value));
 }
 </script>
 

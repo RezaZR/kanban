@@ -26,27 +26,27 @@ function handleDrag(event: DragEvent, stage: StageResult, contact: ContactResult
       @dragstart="handleDrag($event, stage, contact)"
       :style="{'--header-color': stage.header_color }"
     >
-      <p class="country" v-if="contact?.country_code">
+      <p class="country" v-if="contact.country_code">
         {{ getFlagEmoji(contact.country_code) }}
       </p>
       <p class="country" v-else data-has-country="false">
         No Nationality
       </p>
 
-      <h3 class="name">{{ contact?.full_name }}</h3>
+      <h3 class="name">{{ contact.full_name }}</h3>
       <p class="contacts">
         <span>&#9993; </span>
-        <a :href="'mailto:' + contact?.email">
-          {{ contact?.email }}
+        <a :href="'mailto:' + contact.email">
+          {{ contact.email }}
         </a>
       </p>  
       <p class="contacts">
         <span>&#9742; </span>
         <a 
-          v-if="contact?.phone_number"
-          :href="'tel:'+ contact?.phone_number || ''"
+          v-if="contact.phone_number"
+          :href="'tel:'+ contact.phone_number || ''"
         >
-          {{ contact?.phone_number }}
+          {{ contact.phone_number }}
         </a>
         <span v-else>-</span>
       </p>
